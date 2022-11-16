@@ -66,14 +66,19 @@
         public static void LoadFromFile()
         {
             list.Clear();
-            var text = File.ReadAllText("todo.lis");
-            var records = text.Split('\n');
-            foreach (var record in records)
+            try
             {
-                if (record == "") continue;
-                TodoItem todoItem = new TodoItem(record);
-                list.Add(todoItem);
+                var text = File.ReadAllText("todo.lis");
+                var records = text.Split('\n');
+                foreach (var record in records)
+                {
+                    if (record == "") continue;
+                    TodoItem todoItem = new TodoItem(record);
+                    list.Add(todoItem);
+                }
+                
             }
+            catch { }
         }
         public static void SaveToFIle()
         {
@@ -222,7 +227,7 @@
         public static void Main(string[] args)
         {
             Console.WriteLine("Välkommen till att-göra-listan!");
-            Todo.ReadListFromFile();
+            Todo.LoadFromFile();
             Todo.PrintHelp();
             string command;
             do
