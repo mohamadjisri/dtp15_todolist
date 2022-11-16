@@ -23,6 +23,13 @@
             public int priority;
             public string task;
             public string taskDescription;
+            public TodoItem()
+            {
+                status = Active;
+                priority= 1;
+                task = "";
+                taskDescription = "";
+            }
             public TodoItem(int priority, string task)
             {
                 this.status = Active;
@@ -47,6 +54,35 @@
                 else
                     Console.WriteLine();
             }
+            
+            public String toString()
+            {
+                return $"{status}|{priority}|{task}|{taskDescription}";
+            }
+            
+
+        }
+
+        public static void LoadFromFile()
+        {
+            list.Clear();
+            var text = File.ReadAllText("todo.lis");
+            var records = text.Split('\n');
+            foreach (var record in records)
+            {
+                if (record == "") continue;
+                TodoItem todoItem = new TodoItem(record);
+                list.Add(todoItem);
+            }
+        }
+        public static void SaveToFIle()
+        {
+            var text = "";
+            foreach (var item in list)
+            {
+                text += item.toString()+"\n";
+            }
+            File.WriteAllText("todo.lis", text);
         }
         public static void ReadListFromFile()
         {
@@ -56,7 +92,7 @@
             int numRead = 0;
 
             string line;
-            while ((line = sr.ReadLine()) != null)
+            while (((line = sr.ReadLine())) != null)
             {
                 TodoItem item = new TodoItem(line);
                 list.Add(item);
@@ -64,6 +100,39 @@
             }
             sr.Close();
             Console.WriteLine($"Läste {numRead} rader.");
+        }
+
+        public static void setActive(String task)
+        {
+            foreach (var item in list)
+            {
+                if(item.task == task)
+                {
+                    item.status = Active;
+                }
+            }
+        }
+
+        public static void setReady(String task)
+        {
+            foreach (var item in list)
+            {
+                if (item.task == task)
+                {
+                    item.status = Ready;
+                }
+            }
+        }
+
+        public static void setWait(String task)
+        {
+            foreach (var item in list)
+            {
+                if (item.task == task)
+                {
+                    item.status = Waiting;
+                }
+            }
         }
         private static void PrintHeadOrFoot(bool head, bool verbose)
         {
@@ -85,21 +154,67 @@
         {
             PrintHeadOrFoot(head: false, verbose);
         }
-        public static void PrintTodoList(bool verbose = false)
+        public static bool CreateNewTask()
+        {
+            TodoItem task = new TodoItem();
+            task.task = MyIO.ReadCommand("Uppgiftens namn:");
+            var command = MyIO.ReadCommand("Prioritet:");
+            if (MyIO.Equals(command, "1") || MyIO.Equals(command, "2") || MyIO.Equals(command, "3") || MyIO.Equals(command, "4"))
+            {
+                task.priority = int.Parse(command);
+            }
+            else
+            {
+                return false;
+            }
+            task.taskDescription = MyIO.ReadCommand("Beskrivning:");
+            list.Add(task);
+            return true;
+        }
+        public static void PrintTodoList(bool verbose = false,bool active=false)
         {
             PrintHead(verbose);
             foreach (TodoItem item in list)
             {
-                item.Print(verbose);
+                if(active)
+                {
+                    if(item.status is Active) item.Print(verbose);
+                }
+                else
+                {
+                    item.Print(verbose);
+                }
+                
+            }
+            PrintFoot(verbose);
+        }
+
+        public static void PrintTodoList_Active(bool verbose = false)
+        {
+            PrintHead(verbose);
+            foreach (TodoItem item in list)
+            {
+                if(item.status is Active) item.Print(verbose);
             }
             PrintFoot(verbose);
         }
         public static void PrintHelp()
         {
             Console.WriteLine("Kommandon:");
-            Console.WriteLine("hjälp    lista denna hjälp");
-            Console.WriteLine("lista    lista att-göra-listan");
-            Console.WriteLine("sluta    spara att-göra-listan och sluta");
+            Console.WriteLine("ny                   Skapa en ny uppgift");
+            Console.WriteLine("beskriv              lista alla aktiva uppgifter, status, prioritet, namn och beskrivning");
+            Console.WriteLine("spara                spara uppgifterna");
+            Console.WriteLine("ladda                ladda listan todo.lis");
+            Console.WriteLine("hjälp                lista denna hjälp");
+            Console.WriteLine("lista                lista att-göra-listan");
+            Console.WriteLine("sluta                spara att-göra-listan och sluta");
+            Console.WriteLine("lista                list All task");
+            Console.WriteLine("lista allt           list Active task");
+            Console.WriteLine("aktivera /uppgift/   sätt status på uppgift till Active");
+            Console.WriteLine("klar /uppgift/       sätt status på uppgift till Ready");
+            Console.WriteLine("vänta /uppgift/      sätt status på uppgift till Waiting");
+            Console.WriteLine("sluta                spara senast laddade filen och avsluta programmet!");
+
         }
     }
     class MainClass
@@ -125,9 +240,75 @@
                 else if (MyIO.Equals(command, "lista"))
                 {
                     if (MyIO.HasArgument(command, "allt"))
-                        Todo.PrintTodoList(verbose: true);
+                        Todo.PrintTodoList(verbose: false, active: false);
                     else
-                        Todo.PrintTodoList(verbose: false);
+                        Todo.PrintTodoList(verbose: false, active: true);
+                }
+                else if (MyIO.Equals(command, "beskriv"))
+                {
+                    Todo.PrintTodoList_Active(verbose: true);
+                }
+                else if (MyIO.Equals(command, "ny"))
+                {
+                    if (Todo.CreateNewTask())
+                    {
+                        Console.WriteLine("Uppgift tillagd");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Något gick fel");
+                    }
+                }
+                else if (MyIO.Equals(command, "spara"))
+                {
+                    Todo.SaveToFIle();
+                }
+                else if (MyIO.Equals(command, "ladda"))
+                {
+                    Todo.LoadFromFile();
+                }
+                else if (command.Contains("aktivera"))
+                {
+                    try
+                    {
+                        var task = command.Split('/')[1];
+                        Todo.setActive(task);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+                else if (command.Contains("klar"))
+                {
+                    try
+                    {
+                        var task = command.Split('/')[1];
+                        Todo.setReady(task);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+                else if (command.Contains("vänta"))
+                {
+                    try
+                    {
+                        var task = command.Split('/')[1];
+                        Todo.setWait(task);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+
+                else if (command.Contains("sluta"))
+                {
+                    Todo.SaveToFIle();
+                    Console.WriteLine("Hej då!");
+                    break;
                 }
                 else
                 {
