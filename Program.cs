@@ -9,7 +9,7 @@
         public const int Ready = 3;
         public static string StatusToString(int status)
         {
-            switch (status)
+            switch (status) //Redan implementerad i koden
             {
                 case Active: return "aktiv";
                 case Waiting: return "väntande";
@@ -17,20 +17,20 @@
                 default: return "(felaktig)";
             }
         }
-        public class TodoItem
+        public class TodoItem //implementering av tasks, redan
         {
             public int status;
             public int priority;
             public string task;
             public string taskDescription;
-            public TodoItem()
+            public TodoItem() //redan imple
             {
                 status = Active;
                 priority= 1;
                 task = "";
                 taskDescription = "";
             }
-            public TodoItem(int priority, string task)
+            public TodoItem(int priority, string task) //set aktiva
             {
                 this.status = Active;
                 this.priority = priority;
@@ -45,7 +45,7 @@
                 task = field[2];
                 taskDescription = field[3];
             }
-            public void Print(bool verbose = false)
+            public void Print(bool verbose = false) //printar listan
             {
                 string statusString = StatusToString(status);
                 Console.Write($"|{statusString,-12}|{priority,-6}|{task,-20}|");
@@ -55,7 +55,7 @@
                     Console.WriteLine();
             }
             
-            public String toString()
+            public String toString() //ny print
             {
                 return $"{status}|{priority}|{task}|{taskDescription}";
             }
@@ -63,7 +63,7 @@
 
         }
 
-        public static void LoadFromFile()
+        public static void LoadFromFile() //imple av load
         {
             list.Clear();
             try
@@ -80,7 +80,7 @@
             }
             catch { }
         }
-        public static void SaveToFIle()
+        public static void SaveToFIle() //imple av save med nya rad på listan
         {
             var text = "";
             foreach (var item in list)
@@ -89,7 +89,7 @@
             }
             File.WriteAllText("todo.lis", text);
         }
-        public static void ReadListFromFile()
+        public static void ReadListFromFile() //imple av read (redan imple) + todo.list rader
         {
             string todoFileName = "todo.lis";
             Console.Write($"Läser från fil {todoFileName} ... ");
@@ -107,7 +107,7 @@
             Console.WriteLine($"Läste {numRead} rader.");
         }
 
-        public static void setActive(String task)
+        public static void setActive(String task) //set Aktiva task
         {
             foreach (var item in list)
             {
@@ -118,7 +118,7 @@
             }
         }
 
-        public static void setReady(String task)
+        public static void setReady(String task) //set Ready task
         {
             foreach (var item in list)
             {
@@ -129,7 +129,7 @@
             }
         }
 
-        public static void setWait(String task)
+        public static void setWait(String task) //set Wait task
         {
             foreach (var item in list)
             {
@@ -139,7 +139,7 @@
                 }
             }
         }
-        private static void PrintHeadOrFoot(bool head, bool verbose)
+        private static void PrintHeadOrFoot(bool head, bool verbose) //pinta listan (if-else loop)
         {
             if (head)
             {
@@ -159,7 +159,7 @@
         {
             PrintHeadOrFoot(head: false, verbose);
         }
-        public static bool CreateNewTask()
+        public static bool CreateNewTask() //set ny task
         {
             TodoItem task = new TodoItem();
             task.task = MyIO.ReadCommand("Uppgiftens namn:");
@@ -176,7 +176,7 @@
             list.Add(task);
             return true;
         }
-        public static void PrintTodoList(bool verbose = false,bool active=false)
+        public static void PrintTodoList(bool verbose = false,bool active=false) //printa aktiva (foreach loop)
         {
             PrintHead(verbose);
             foreach (TodoItem item in list)
@@ -194,7 +194,7 @@
             PrintFoot(verbose);
         }
 
-        public static void PrintTodoList_Active(bool verbose = false)
+        public static void PrintTodoList_Active(bool verbose = false) //printa aktiva (foreach loop)
         {
             PrintHead(verbose);
             foreach (TodoItem item in list)
@@ -203,7 +203,7 @@
             }
             PrintFoot(verbose);
         }
-        public static void PrintHelp()
+        public static void PrintHelp() //redan imple + nya kommando på listan
         {
             Console.WriteLine("Kommandon:");
             Console.WriteLine("ny                   Skapa en ny uppgift");
@@ -224,7 +224,7 @@
     }
     class MainClass
     {
-        public static void Main(string[] args)
+        public static void Main(string[] args) //redan imple + printa och skriva in kommando (CW) + nya okända kommando print (catch, try, if)
         {
             Console.WriteLine("Välkommen till att-göra-listan!");
             Todo.LoadFromFile();
@@ -323,7 +323,7 @@
             while (true);
         }
     }
-    class MyIO
+    class MyIO //redan imple IO kod
     {
         static public string ReadCommand(string prompt)
         {
@@ -341,7 +341,7 @@
             }
             return false;
         }
-        static public bool HasArgument(string rawCommand, string expected)
+        static public bool HasArgument(string rawCommand, string expected) //redan imple IO kod
         {
             string command = rawCommand.Trim();
             if (command == "") return false;
